@@ -20,6 +20,7 @@ body
     width: 64px;
     height: 16px;
     background-color: coral;
+    border-radius: 5px;
 }
 
 #ball
@@ -58,6 +59,7 @@ body
     background-color: white;
     box-shadow: 5px 5px 10px gray;
     display: none;
+    border-radius: 5px;
 }
 
 #controls h3
@@ -74,6 +76,7 @@ body
     margin: 5px;
     padding: 5px;
     min-width: 100px;
+    border-radius: 5px;
 }
 
 #gear

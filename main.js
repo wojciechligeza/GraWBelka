@@ -8,13 +8,13 @@ var newButton;
 var difficultySelect;
 var doneButton;
 
-var aWidth;
-var aHeight;
-var pWidth;
-var pHeight;
-var dx = 2;
-var dy = 2;
-var pdx = 48;
+var availableWidth;
+var availableHeight;
+var playingAreaWidth;
+var playingAreaHeight;
+var speedX = 2;
+var speedY = 2;
+var paddleSpeedX = 48;
 var currentScore = 0;
 var timer;
 var paddleLeft = 228;
@@ -58,24 +58,24 @@ function init() {
 }
 
 function layoutPage() {
-    aWidth = innerWidth;
-    aHeight = innerHeight;
-    pWidth = aWidth - 22;
-    pHeight = aHeight - 22;
-    playingArea.style.width = pWidth + 'px';
-    playingArea.style.height = pHeight + 'px';
+    availableWidth = innerWidth;
+    availableHeight = innerHeight;
+    playingAreaWidth = availableWidth - 22;
+    playingAreaHeight = availableHeight - 22;
+    playingArea.style.width = playingAreaWidth + 'px';
+    playingArea.style.height = playingAreaHeight + 'px';
 }
 
 function keyListener(keyboard) {
     var key = keyboard.keyCode;
     if ((key == 37 || key == 65) && paddleLeft > 0) {
-        paddleLeft -= pdx;
+        paddleLeft -= paddleSpeedX;
         if(paddleLeft < 0)
             paddleLeft = 0;
-    } else if ((key == 39 || key == 68) && paddleLeft < pWidth - 64) {
-        paddleLeft += pdx;
-        if (paddleLeft > (pWidth - 64))
-            paddleLeft = pWidth - 64;
+    } else if ((key == 39 || key == 68) && paddleLeft < playingAreaWidth - 64) {
+        paddleLeft += paddleSpeedX;
+        if (paddleLeft > (playingAreaWidth - 64))
+            paddleLeft = playingAreaWidth - 64;
     }
     paddle.style.left = paddleLeft + 'px';
 }
@@ -84,7 +84,7 @@ function start() {
     render();
     detectCollisions();
     difficulty();
-    if (ballTop < pHeight - 36) {
+    if (ballTop < playingAreaHeight - 36) {
         timer = requestAnimationFrame(start);
     } else {
         gameOver();
@@ -97,8 +97,8 @@ function render() {
 }
 
 function moveBall() {
-    ballLeft += dx;
-    ballTop += dy;
+    ballLeft += speedX;
+    ballTop += speedY;
     ball.style.left = ballLeft + 'px';
     ball.style.top = ballTop + 'px';
 }
@@ -110,42 +110,44 @@ function updateScore() {
 
 function detectCollisions() {
     if (collisionX()) {
-        dx *= -1;
+        speedX *= -1;
     }
     if (collisionY()) {
-        dy *= -1;
+        speedY *= -1;
     }
 }
+
 function collisionX() {
-    if (ballLeft < 4 || ballLeft > pWidth - 20) {
+    if (ballLeft < 4 || ballLeft > playingAreaWidth - 20) {
         return true;
     }
     return false;
 }
+
 function collisionY() {
     if(ballTop < 4) {
         return true;
     }
-    if(ballTop > pHeight - 64) {
+    if(ballTop > playingAreaHeight - 64) {
        if (ballLeft >= paddleLeft + 16 && ballLeft < paddleLeft + 48) {
-           if (dx < 0) {
-               dx = -2;
+           if (speedX < 0) {
+               speedX = -2;
            } else {
-               dx = 2;
+               speedX = 2;
            }
            return true;
        } else if (ballLeft >= paddleLeft && ballLeft < paddleLeft + 16) {
-           if (dx < 0) {
-               dx = -8;
+           if (speedX < 0) {
+                speedX = -8;
            } else {
-               dx = 8;
+                speedX = 8;
            }
            return true;
        } else if(ballLeft >= paddleLeft + 48 && ballLeft <= paddleLeft + 64) {
-           if (dx < 0) {
-               dx = -8;
+           if (speedX < 0) {
+                speedX = -8;
            } else {
-               dx = 8;
+                speedX = 8;
            }
            return true;
        }
@@ -154,11 +156,11 @@ function collisionY() {
 }
 
 function difficulty() {
-    if (currentScore % 1000 == 0) {
-        if (dy > 0)
-            dy += 2;
+    if (currentScore % 2000 == 0) {
+        if (speedY > 0)
+            speedY += 2;
         else
-            dy -= 2;
+            speedY -= 2;
     }
 }
 
@@ -183,8 +185,8 @@ function mouseMove(move) {
         paddleLeft = move.clientX - 32 || move.targetTouches[0].pageX - 32;
         if (paddleLeft < 0)
             paddleLeft = 0;
-        if (paddleLeft > (pWidth - 64))
-            paddleLeft = pWidth - 64;
+        if (paddleLeft > (playingAreaWidth - 64))
+            paddleLeft = playingAreaWidth - 64;
         paddle.style.left = paddleLeft + 'px';
     }
 }
@@ -202,27 +204,27 @@ function hideSettings(){
 function setDifficulty(set) {
     switch (set) {
         case 0:
-            dy = 2;
-            pdx = 48;
+            speedY = 2;
+            paddleSpeedX = 48;
             break;
         case 1:
-            dy = 4;
-            pdx = 32;
+            speedY = 4;
+            paddleSpeedX = 32;
             break;
         case 2:
-            dy = 6;
-            pdx = 16;
+            speedY = 6;
+            paddleSpeedX = 16;
             break;
         default:
-            dy = 2;
-            pdx = 48;
+            speedY = 2;
+            paddleSpeedX = 48;
     }
 }
 
 function newGame() {
     ballTop = 8;
     currentScore = 0;
-    dx = 2;
+    speedX = 2;
     setDifficulty(difficultySelect.selectedIndex);
     score.style.backgroundColor = 'violet';
     hideSettings();
